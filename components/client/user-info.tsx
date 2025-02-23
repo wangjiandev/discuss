@@ -22,9 +22,9 @@ const UserInfoClient = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         side="right"
-        sideOffset={12}
+        sideOffset={14}
         align="end"
-        alignOffset={-12}
+        alignOffset={-9}
       >
         <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />

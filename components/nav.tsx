@@ -36,7 +36,7 @@ const NavBar = () => {
                   <TooltipTrigger asChild>
                     <span className="text-center">
                       <Link
-                        href="/admin"
+                        href={menu.href}
                         className={cn(
                           "flex items-center justify-center bg-white size-8 text-[#8e8ea9] hover:bg-[#f5f5f7] hover:rounded-md overflow-hidden transition-colors",
                           isActive && "bg-[#f0f0ff] rounded-md text-[#4945ff]"
