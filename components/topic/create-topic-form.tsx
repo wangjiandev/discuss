@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Popover,
+  PopoverAnchor,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
@@ -13,7 +14,6 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,13 +21,12 @@ import { createTopic } from "@/actions/topic/create-topic";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-const createTopicSchema = z.object({
-  name: z.string().min(1, "主题名称不能为空"),
-  description: z.string().min(1, "主题描述不能为空"),
-});
+import { Separator } from "@/components/ui/separator";
+import { createTopicSchema } from "@/actions/topic/schemas";
+import { useState } from "react";
 
 const CreateTopicForm = () => {
+  const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof createTopicSchema>>({
     resolver: zodResolver(createTopicSchema),
     defaultValues: {
@@ -37,61 +36,89 @@ const CreateTopicForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof createTopicSchema>) => {
-    await createTopic({
-      name: values.name,
-      description: values.description,
-    });
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("description", values.description);
+    const result = await createTopic(formData);
+    if (result?.errors) {
+      form.setError("root", {
+        message: "Failed to create topic",
+      });
+      console.log(result.errors);
+    } else {
+      form.reset();
+      setOpen(false);
+    }
+  };
+
+  const openChangeHandler = (open: boolean) => {
+    if (!open) {
+      form.reset();
+    }
+    setOpen(open);
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={openChangeHandler}>
       <PopoverTrigger asChild>
         <Button size="sm" className="w-full">
           Create New Topic
         </Button>
       </PopoverTrigger>
-      <PopoverContent side="right" align="start" className="w-96">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-2"
-          >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Topic Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Name" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Topic Description</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Description" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit">Create</Button>
-          </form>
-        </Form>
-      </PopoverContent>
+      <PopoverAnchor>
+        <PopoverContent side="bottom" align="start" className="w-96">
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <h4 className="font-medium leading-none">Dimensions</h4>
+              <p className="text-sm text-muted-foreground">
+                Set the dimensions for the layer.
+              </p>
+            </div>
+            <Separator />
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-2"
+              >
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Topic Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Topic Description</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Description" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {form.formState.errors.root && (
+                  <FormMessage>
+                    {form.formState.errors.root.message}
+                  </FormMessage>
+                )}
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? "Creating..." : "Create"}
+                </Button>
+              </form>
+            </Form>
+          </div>
+        </PopoverContent>
+      </PopoverAnchor>
     </Popover>
   );
 };
