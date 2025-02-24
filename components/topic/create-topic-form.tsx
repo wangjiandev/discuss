@@ -42,9 +42,8 @@ const CreateTopicForm = () => {
     const result = await createTopic(formData);
     if (result?.errors) {
       form.setError("root", {
-        message: "Failed to create topic",
+        message: result.errors.toString(),
       });
-      console.log(result.errors);
     } else {
       form.reset();
       setOpen(false);

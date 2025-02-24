@@ -9,9 +9,9 @@ import {
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { AdapterAccountType } from "next-auth/adapters";
+import { relations } from "drizzle-orm";
 
 const pool = postgres(process.env.AUTH_DRIZZLE_URL!, { max: 1 });
-
 export const db = drizzle(pool);
 
 export const users = pgTable("user", {
@@ -23,6 +23,12 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
 });
+
+export const userRelations = relations(users, ({ many }) => ({
+  topics: many(topic),
+  posts: many(post),
+  comments: many(comment),
+}));
 
 export const accounts = pgTable(
   "account",
@@ -96,3 +102,93 @@ export const authenticators = pgTable(
     },
   ]
 );
+
+export const topic = pgTable("topic", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name").unique(),
+  description: text("description"),
+  createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
+});
+
+export const topicRelations = relations(topic, ({ many, one }) => ({
+  posts: many(post),
+  user: one(users, {
+    fields: [topic.userId],
+    references: [users.id],
+  }),
+}));
+
+export const post = pgTable("post", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  title: text("title").unique(),
+  content: text("content"),
+  createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
+  topicId: text("topicId")
+    .notNull()
+    .references(() => topic.id, {
+      onDelete: "cascade",
+    }),
+});
+
+export const postRelations = relations(post, ({ many, one }) => ({
+  user: one(users, {
+    fields: [post.userId],
+    references: [users.id],
+  }),
+  topic: one(topic, {
+    fields: [post.topicId],
+    references: [topic.id],
+  }),
+}));
+
+export const comment = pgTable("comment", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  content: text("content"),
+  createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
+  postId: text("postId")
+    .notNull()
+    .references(() => post.id, { onDelete: "cascade" }),
+  parentId: text("parentId"),
+});
+
+export const commentRelations = relations(comment, ({ many, one }) => ({
+  user: one(users, {
+    fields: [comment.userId],
+    references: [users.id],
+  }),
+  post: one(post, {
+    fields: [comment.postId],
+    references: [post.id],
+  }),
+  parent: one(comment, {
+    fields: [comment.parentId],
+    references: [comment.id],
+  }),
+  children: many(comment, {
+    relationName: "children",
+  }),
+}));
