@@ -1,7 +1,5 @@
-import NavBar from "@/components/nav";
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from "lucide-react";
 import CreateTopicForm from "@/components/topic/create-topic-form";
+import TopicList from "@/components/topic/topic-list";
 
 interface ContentLayoutProps {
   children: React.ReactNode;
@@ -24,16 +22,7 @@ const ContentLayout = ({ children }: ContentLayoutProps) => {
           <div className="text-[#666687] text-sm font-bold">
             <span>All Topics</span>
           </div>
-          <div className="text-base font-bold">
-            <ul>
-              <li>
-                <span>All Topics</span>
-              </li>
-              <li>
-                <span>All Topics</span>
-              </li>
-            </ul>
-          </div>
+          <TopicList />
         </div>
         <div className="pt-3 w-full px-4">
           <div className="text-[#666687] text-sm font-bold">

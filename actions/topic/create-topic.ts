@@ -2,7 +2,8 @@
 
 import { auth } from "@/auth";
 import { createTopicSchema } from "./schemas";
-import { db, topic } from "@/db/schema";
+import { db } from "@/db";
+import { topic } from "@/db/schema";
 import { redirect } from "next/navigation";
 
 type NewTopic = typeof topic.$inferInsert;
