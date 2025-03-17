@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { post, users, comment } from "@/db/schema";
 
 type Post = typeof post.$inferSelect;
@@ -20,6 +20,18 @@ export const getPosts = async (
       user: true,
       comments: true,
     },
+  });
+  return posts;
+};
+
+export const getTop5Posts = async (): Promise<PostWithRelations[]> => {
+  const posts = await db.query.post.findMany({
+    with: {
+      user: true,
+      comments: true,
+    },
+    orderBy: desc(post.createdAt),
+    limit: 5,
   });
   return posts;
 };
