@@ -8,7 +8,7 @@ interface AdminLayoutProps {
 const AdminLayout = ({ children }: AdminLayoutProps) => {
   return (
     <SessionProvider>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen bg-background">
         <NavBar />
         <div className="flex-1">{children}</div>
       </div>

@@ -24,21 +24,6 @@ const ContentLayout = ({ children }: ContentLayoutProps) => {
           </div>
           <TopicList />
         </div>
-        <div className="pt-3 w-full px-4">
-          <div className="text-[#666687] text-sm font-bold">
-            <span>Published</span>
-          </div>
-          <div>
-            <ul>
-              <li>
-                <span>All Topics</span>
-              </li>
-              <li>
-                <span>All Topics</span>
-              </li>
-            </ul>
-          </div>
-        </div>
       </div>
       <div className="flex-1">{children}</div>
     </div>

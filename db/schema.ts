@@ -150,6 +150,7 @@ export const postRelations = relations(post, ({ many, one }) => ({
     fields: [post.topicId],
     references: [topic.id],
   }),
+  comments: many(comment),
 }));
 
 export const comment = pgTable("comment", {
