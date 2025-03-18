@@ -2,6 +2,7 @@ import ContentHeader from "@/components/content-header";
 import CreateTopicForm from "@/components/topic/create-topic-form";
 import TopicList from "@/components/topic/topic-list";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Suspense } from "react";
 
 interface ContentLayoutProps {
   children: React.ReactNode;
@@ -24,7 +25,9 @@ const ContentLayout = ({ children }: ContentLayoutProps) => {
         </div>
         <div className="flex-1 min-h-screen relative">
           <div className="fixed top-0 w-full flex flex-col gap-2 h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <ContentHeader />
+            <Suspense fallback={<div>Loading...</div>}>
+              <ContentHeader />
+            </Suspense>
           </div>
           <div className="pt-16">{children}</div>
         </div>

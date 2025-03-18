@@ -8,13 +8,6 @@ interface SearchPageProps {
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
   const { query } = await searchParams;
   const posts = await searchPosts(query);
-  if (posts.length === 0) {
-    return (
-      <div className="flex justify-center items-center w-full h-96">
-        No posts found
-      </div>
-    );
-  }
   return <PostList data={posts} />;
 };
 
