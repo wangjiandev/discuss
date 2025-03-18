@@ -35,3 +35,18 @@ export const getTop5Posts = async (): Promise<PostWithRelations[]> => {
   });
   return posts;
 };
+
+export const getPost = async (postId: string): Promise<PostWithRelations> => {
+  const postEntity = await db.query.post.findFirst({
+    with: {
+      user: true,
+      comments: true,
+    },
+    where: eq(post.id, postId),
+  });
+  if (!postEntity) {
+    throw new Error("Post not found");
+  }
+
+  return postEntity;
+};

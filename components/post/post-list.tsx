@@ -1,6 +1,7 @@
 "use client";
 
 import { PostWithRelations } from "@/data/posts";
+import Link from "next/link";
 
 interface PostListProps {
   data: PostWithRelations[];
@@ -14,17 +15,19 @@ const PostList = ({ data }: PostListProps) => {
           key={post.id}
           className="p-4 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 relative rounded-md border"
         >
-          <div className="flex items-end justify-between">
-            <div className="flex flex-col items-start gap-2 justify-between">
-              <span>{post.title}</span>
+          <Link href={`/admin/content/topics/${post.topicId}/posts/${post.id}`}>
+            <div className="flex items-end justify-between">
+              <div className="flex flex-col items-start gap-2 justify-between">
+                <span>{post.title}</span>
+                <span className="text-xs font-normal leading-snug text-muted-foreground">
+                  {post.user?.name}
+                </span>
+              </div>
               <span className="text-xs font-normal leading-snug text-muted-foreground">
-                {post.user?.name}
+                {post.comments?.length} comments
               </span>
             </div>
-            <span className="text-xs font-normal leading-snug text-muted-foreground">
-              {post.comments?.length} comments
-            </span>
-          </div>
+          </Link>
         </div>
       ))}
     </div>

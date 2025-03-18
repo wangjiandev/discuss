@@ -4,7 +4,6 @@ import PostList from "@/components/post/post-list";
 
 const Page = async () => {
   const posts = await getTop5Posts();
-  console.log(posts);
   return (
     <main className="flex flex-col gap-4">
       <div className="bg-background flex items-center justify-between mt-4">

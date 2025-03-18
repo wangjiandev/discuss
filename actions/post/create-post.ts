@@ -32,8 +32,6 @@ export const createPost = async (
     topicId: formData.get("topicId"),
   });
 
-  console.log(validatedFields);
-
   // Return early if the form data is invalid
   if (!validatedFields.success) {
     return {
