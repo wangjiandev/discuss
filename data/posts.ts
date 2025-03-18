@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, ilike, or } from "drizzle-orm";
 import { post, users, comment } from "@/db/schema";
 
 type Post = typeof post.$inferSelect;
@@ -49,4 +49,21 @@ export const getPost = async (postId: string): Promise<PostWithRelations> => {
   }
 
   return postEntity;
+};
+
+export const searchPosts = async (
+  query: string
+): Promise<PostWithRelations[]> => {
+  const posts = await db.query.post.findMany({
+    where: or(
+      ilike(post.title, `%${query}%`),
+      ilike(post.content, `%${query}%`)
+    ),
+    with: {
+      user: true,
+      comments: true,
+    },
+    orderBy: desc(post.createdAt),
+  });
+  return posts;
 };
